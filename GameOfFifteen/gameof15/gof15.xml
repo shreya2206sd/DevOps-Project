@@ -5,20 +5,47 @@
 <property name="build.target" value=${working.dir}/target"/>
 <property name ="project.target" value = "${build.target}/project"/>
 <propert name = "project.build.output" value = "${project.target}/output/">
-<property name = "project.java.classes" value = "${project.build.output}/java-"
+<property name = "project.java.classes" value = "${project.build.output}/java-classes"/>
 <property name = "project.java.source" value = "..\\src\\main\\java"/>
-<property name = "project.source.lib" value = "${project.build.output}/java-"
+<property name = "project.source.lib" value = "..\\lib"/>
+<property name = "copiler.encoding" value = "UTF-8"/>
+<property name="project.java.mainfest" value="..\\mainfest\\MAINFEST.MF"/>
 
-<abc>1</abc>
-<version>2</version>
-</properties>
+
 <target name="cleanup">
-    <del name="target"/>
+    <delete dir="${build.target}"/>
 </target>
 
-<target name="compile"depends="cleanup">
+<target name="prepareTarget" depends="cleanup">
+      <mkdir dir="${project.target}"/>
+      <mkdir dir="${build.target}"/>
+      <mkdir dir="${project.build.output}"/>
+      <mkdir dir="${project.java.classes}"/>
+</target>
 
+<target name = "compileJava" depends = "prepareTarget">
+	<path id ="build.project.classpath">
+		<fileset dir = "${project.source.lib}" includes = "**/*.jar"/>
+	</path>
+	<javac 
+	encoding = "${compiler.encoding}"
+	destdir = "${project.java.classes}"
+	classpath = "build.project.classpath"
+	debug = "on"
+	deprecation = "off"
+	optimize = "on"
+	fork = "false"
+	verbose = "false"
+	>
+		<src path = "${project.java.source}"/>
+		<classpath refid = "build.project.classpath">
+	</javac>
+</target>
 
+<target name = "main" depends = "compileJava">
+	<jar jarfile = "${project.target}/abc.jsr" manifest = "${project.java.manifest}">
+		<fileset dir = "${project.java.classes}"/>
+	</jar>
 </target>
 
 </project>
